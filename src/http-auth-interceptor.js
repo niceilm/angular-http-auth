@@ -5,12 +5,12 @@
  * (c) 2012 Witold Szczerba
  * License: MIT
  */
-(function() {
+(function () {
   'use strict';
 
   angular.module('http-auth-interceptor', ['http-auth-interceptor-buffer'])
 
-    .factory('authService', ['$rootScope', 'httpBuffer', function($rootScope, httpBuffer) {
+    .factory('authService', ['$rootScope','httpBuffer', function($rootScope, httpBuffer) {
       return {
         /**
          * call this function to indicate that authentication was successfull and trigger a
@@ -18,10 +18,8 @@
          * @param data an optional argument to pass on to $broadcast which may be useful for
          * example if you need to pass through details of the user that was logged in
          */
-        loginConfirmed : function(data, configUpdater) {
-          var updater = configUpdater || function(config) {
-            return config;
-          };
+        loginConfirmed: function(data, configUpdater) {
+          var updater = configUpdater || function(config) {return config;};
           $rootScope.$broadcast('event:auth-loginConfirmed', data);
           httpBuffer.retryAll(updater);
         }
@@ -90,11 +88,9 @@
         function successCallback(response) {
           deferred.resolve(response);
         }
-
         function errorCallback(response) {
           deferred.reject(response);
         }
-
         $http = $http || $injector.get('$http');
         $http(config).then(successCallback, errorCallback);
       }
@@ -103,18 +99,18 @@
         /**
          * Appends HTTP request configuration object with deferred response attached to buffer.
          */
-        append : function(config, deferred) {
+        append: function(config, deferred) {
           buffer.push({
-            config : config,
-            deferred : deferred
+            config: config,
+            deferred: deferred
           });
         },
 
         /**
          * Retries all the buffered requests clears the buffer.
          */
-        retryAll : function(updater) {
-          for(var i = 0 ; i < buffer.length ; ++i) {
+        retryAll: function(updater) {
+          for (var i = 0; i < buffer.length; ++i) {
             retryHttpRequest(updater(buffer[i].config), buffer[i].deferred);
           }
           buffer = [];
